@@ -1,0 +1,8 @@
+services:
+  srb2kart:
+    build: .
+    image: srb2kart-ubuntu
+    ports:
+      - "5029:5029/tcp"
+      - "5029:5029/udp"
+
