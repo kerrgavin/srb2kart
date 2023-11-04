@@ -1,7 +1,10 @@
 services:
   srb2kart:
-    build: .
-    image: srb2kart-ubuntu
+    build: 
+      context: .
+      target: srb2kart-custom
+    image: srb2kart
+    container_name: srb2kart
     ports:
       - "5029:5029/tcp"
       - "5029:5029/udp"
