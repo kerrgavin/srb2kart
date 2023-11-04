@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build --target srb2k-base -t srb2k-base .
+docker build --target srb2kart-base -t srb2kart-base .

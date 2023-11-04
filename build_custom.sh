@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build --target srb2k-custom -t srb2k-custom .
+docker build --target srb2kart-custom -t srb2kart-custom .
