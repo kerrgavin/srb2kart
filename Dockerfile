@@ -14,7 +14,9 @@ FROM srb2kart-base as srb2kart-custom
 WORKDIR /app
 COPY run.sh run.sh
 COPY addons.sh addons.sh
+COPY kartserv.cfg kartserv.cfg
 RUN sudo chmod 777 run.sh
 RUN sudo chmod 777 addons.sh
+RUN mv kartserv.cfg .srb2kart/kartserv.cfg
 RUN ./addons.sh
 CMD ["./run.sh"]
