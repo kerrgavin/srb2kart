@@ -8,4 +8,6 @@ services:
     ports:
       - "5029:5029/tcp"
       - "5029:5029/udp"
-
+    volumes:
+      - ./configs:/app/configs
+      - ./addons:/app/addons
