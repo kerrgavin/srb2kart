@@ -8,7 +8,7 @@ import (
 )
 
 type ConfigPlugin interface {
-	ProcessConfig(configJson string) string
+	ProcessConfig(configMap map[string]string) (string, error)
 }
 
 func main() {
