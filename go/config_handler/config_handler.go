@@ -1,20 +1,31 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"io/fs"
+	"log"
 	"os"
 	"plugin"
 )
 
 type ConfigPlugin interface {
-	ProcessConfig(configMap map[string]string) (string, error)
+	ProcessConfig(configMap map[string]json.RawMessage) (string, error)
+}
+
+type Config struct {
+	ServerConfigs map[string]json.RawMessage `json:"serverconfigs"`
 }
 
 func main() {
 	jsonFile, err := os.ReadFile("config.json")
 	if err != nil {
 		log.Fatal("could not load config json file")
+	}
+
+	var config = Config{}
+	err = json.Unmarshal([]byte(jsonFile), &config)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	files, err := os.ReadDir("plugins")
@@ -37,7 +48,10 @@ func main() {
 		if !ok {
 			log.Fatal("couldn't load plugin")
 		}
-		pluginOut := configPlugin.ProcessConfig(string(jsonFile))
+		pluginOut, err := configPlugin.ProcessConfig(config.ServerConfigs)
+		if err != nil {
+			log.Fatal(err)
+		}
 		log.Printf("Plugin output: %s", pluginOut)
 	}
 }

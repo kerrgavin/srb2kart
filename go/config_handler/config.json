@@ -1,64 +1,66 @@
 {
-	"key": "value"
-	"hostmod":  {
-		"automate": false,
-		"encore": -1,
-		"specbomb": {
-			"enabled": false,
-			"antisoftlock": false
-		},
-		"nameFilter": {
-			"mode": "Kick",
-			"names": []
-		},
-		"battle": {
-			"timelimit": 5,
-			"bail": true
-		},
-		"motd" : {
-			"enabled": true,
-			"nag": false,
-			"background": "Blue",
-			"name": "Name",
-			"contact": "Contact",
-			"tagline": "Taglin"
-		},
-		"restat": {
-			"enabled": true,
-			"notify": true
-		},
-		"shout": {
-			"autoshout": true,
-			"name": "Name",
-			"color": "Red"
-		},
-		"schedule": {
-			"enabled": false,
-			"jobs": []
-		},
-		"vote": {
-			"whitelist": [],
-			"timer": 30,
-			"autopass": 50,
-			"allowidc": false
-		},
-		"customcheck": {
-			"enabled": false,
-			"checkOne": false,
-			"checkTwo": false,
-			"checkThree": false
-		},
-		"scoreboard": {
-			"enabled": true,
-			"humor": true,
-			"lines": [],
-			"modLines": []
-		},
-		"veto": {
-			"enabled": true,
-			"threshold": 50,
-			"hellclosed": 0,
-			"hellopen": 0
+	"key": "value",
+	"serverConfigs": {
+		"hostmod":  {
+			"automate": false,
+			"encore": -1,
+			"specbomb": {
+				"enabled": false,
+				"antisoftlock": false
+			},
+			"nameFilter": {
+				"mode": "Kick",
+				"names": []
+			},
+			"battle": {
+				"timelimit": 5,
+				"bail": true
+			},
+			"motd" : {
+				"enabled": true,
+				"nag": false,
+				"background": "Green",
+				"name": "Name",
+				"contact": "Contact",
+				"tagline": "Tagline"
+			},
+			"restat": {
+				"enabled": true,
+				"notify": true
+			},
+			"shout": {
+				"autoshout": true,
+				"name": "Name",
+				"color": "Red"
+			},
+			"schedule": {
+				"enabled": false,
+				"jobs": []
+			},
+			"vote": {
+				"whitelist": [],
+				"timer": 30,
+				"autopass": 50,
+				"allowidc": false
+			},
+			"customcheck": {
+				"enabled": false,
+				"checkOne": false,
+				"checkTwo": false,
+				"checkThree": false
+			},
+			"scoreboard": {
+				"enabled": true,
+				"humor": true,
+				"lines": [],
+				"modLines": []
+			},
+			"veto": {
+				"enabled": true,
+				"threshold": 50,
+				"hellclosed": 0,
+				"hellopen": 0
+			}
 		}
 	}
 }

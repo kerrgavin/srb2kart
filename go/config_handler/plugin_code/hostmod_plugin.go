@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type hostmod struct {
-	Automate bool `json:"automate"`
-	Encore int `json:"encore"`
+	Automate *bool `json:"automate"`
+	Encore *int `json:"encore"`
 	Specbomb specbomb `json:"specbomb"`
 	NameFilter nameFilter `json:"namefilter"`
 	Battle battle `json:"battle"`
@@ -39,12 +40,12 @@ type battle struct {
 }
 
 type motd struct {
-	Enabled bool `json:"enabled"`
-	Nag bool `json:"nag"`
-	Background string `json:"background"`
-	Name string `json:"name"`
-	Contact string `json:"contact"`
-	Tagline string `json:"tagline"`
+	Enabled *bool `json:"enabled"`
+	Nag *bool `json:"nag"`
+	Background *string `json:"background"`
+	Name *string `json:"name"`
+	Contact *string `json:"contact"`
+	Tagline *string `json:"tagline"`
 }
 
 type restat struct {
@@ -92,28 +93,60 @@ type veto struct {
 }
 
 func (hostmod hostmod) getServerConfig() string {
+	var configHelper configHelper
+	configHelper.comment("hostmod configs")
+	configHelper.configBool("hm_automate", hostmod.Automate)
+	configHelper.configInt("hm_encore", hostmod.Encore)
+	//serverConfig += hostmod.Specbomb.getServerConfig()
+	//serverConfig += hostmod.NameFilter.getServerConfig()
+	//serverConfig += hostmod.Battle.getServerConfig()
+	hostmod.Motd.getServerConfig(&configHelper)
+	//serverConfig += hostmod.Restat.getServerConfig()
+	return configHelper.String()
+}
+
+func (specbomb specbomb) getServerConfig() string {
 	var serverConfig string = ""
-	serverConfig += "#hostmod configs\n"
-	serverConfig += fmt.Sprint("hm_automate %s\n", boolToConfig(hostmod.Automate)) 
-	serverConfig += fmt.Sprint("hm_encore %d\n", hostmod.Encore)
-	serverConfig += hostmod.Motd.getServerConfig()
+	serverConfig += fmt.Sprintf("hm_specbomb %s\n", boolToConfig(specbomb.Enabled))
+	serverConfig += fmt.Sprintf("hm_specbomb_antisoftlock %s\n", boolToConfig(specbomb.AntiSoftlock))
 	return serverConfig
 }
 
-func (motd motd) getServerConfig() string {
+func (nameFilter nameFilter) getServerConfig() string {
 	var serverConfig string = ""
-	serverConfig += fmt.Sprint("hm_motd %s\n", boolToConfig(motd.Enabled))
-	serverConfig += fmt.Sprint("hm_motd_nag %s\n", boolToConfig(motd.Nag))
-	serverConfig += fmt.Sprint("hm_motd_bg %s\n", motd.Background)
-	serverConfig += fmt.Sprint("hm_motd_name %s\n", motd.Name)
-	serverConfig += fmt.Sprint("hm_motd_contact %s\n", motd.Contact)
-	serverConfig += fmt.Sprint("hm_motd_tagline %s\n", motd.Tagline)
+	serverConfig += fmt.Sprintf("hm_namefilter_mode %s\n", nameFilter.Mode)
+	for _, name := range nameFilter.Names {
+		serverConfig += fmt.Sprintf("hm_namefilter %s\n", name)
+	}
+	return serverConfig
+}
+
+func (battle battle) getServerConfig() string {
+	var serverConfig string = ""
+	serverConfig += fmt.Sprintf("hm_timelimit %d\n", battle.Timelimit)
+	serverConfig += fmt.Sprintf("hm_bail %s\n", boolToConfig(battle.Bail))
+	return serverConfig
+}
+
+func (motd motd) getServerConfig(configHelper *configHelper) {
+	configHelper.configBool("hm_motd", motd.Enabled)
+	configHelper.configBool("hm_motd_nag", motd.Nag)
+	configHelper.configString("hm_motd_bg", motd.Background)
+	configHelper.configString("hm_motd_name", motd.Name)
+	configHelper.configString("hm_motd_contact", motd.Contact)
+	configHelper.configString("hm_motd_tagline", motd.Tagline)
+}
+
+func (restat restat) getServerConfig() string {
+	var serverConfig string = ""
+	serverConfig += fmt.Sprintf("hm_restat %s\n", boolToConfig(restat.Enabled))
+	serverConfig += fmt.Sprintf("hm_restat_notify %s\n", boolToConfig(restat.Notify))
 	return serverConfig
 }
 
 type configPlugin struct {}
 
-func (c configPlugin) ProcessConfig(configMap map[string]string) (string, error) {
+func (c configPlugin) ProcessConfig(configMap map[string]json.RawMessage) (string, error) {
 	configJson, ok := configMap["hostmod"]
 	if !ok {
 		log.Printf("Could not find hostmod config")
@@ -121,13 +154,13 @@ func (c configPlugin) ProcessConfig(configMap map[string]string) (string, error)
 	}
 	
 	var hostmod = hostmod{}
-	err := json.Unmarshal([]byte(configJson), &hostmod)
+	err := json.Unmarshal(configJson, &hostmod)
 	if err != nil {
 		log.Print(err)
 		return "", err
 	}
 	log.Printf("Processing config")
-	return "this is some example text"
+	return hostmod.getServerConfig(), nil
 }
 
 var ConfigPlugin configPlugin
@@ -137,4 +170,34 @@ func boolToConfig(value bool) string {
 		return "On"
 	}
 	return "Off"
+}
+
+type configHelper struct {
+	strings.Builder
+}
+
+func (configHelper configHelper) comment(comment string) {
+	configHelper.WriteString(fmt.Sprintf("#%s\n", comment))
+}
+
+func (configHelper *configHelper) configString(serverConfig string, jsonConfig *string) error {
+	if jsonConfig != nil {
+		log.Printf("Config: %s %s", serverConfig, *jsonConfig)
+		configHelper.WriteString(fmt.Sprintf("%s %s\n", serverConfig, *jsonConfig))
+	}
+	return nil
+}
+
+func (configHelper *configHelper) configBool(serverConfig string, jsonConfig *bool) error {
+	if jsonConfig != nil {
+		configHelper.WriteString(fmt.Sprintf("%s %s\n", serverConfig, boolToConfig(*jsonConfig)))
+	}
+	return nil
+}
+
+func (configHelper *configHelper) configInt(serverConfig string, jsonConfig *int) error {
+	if jsonConfig != nil {
+		configHelper.WriteString(fmt.Sprintf("%s %d\n", serverConfig, *jsonConfig))
+	}
+	return nil
 }
