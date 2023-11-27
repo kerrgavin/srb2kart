@@ -6,11 +6,8 @@ import (
 	"log"
 	"os"
 	"plugin"
+	"github.com/kerrgavin/srb2kart-go/config"
 )
-
-type ConfigPlugin interface {
-	ProcessConfig(configMap map[string]json.RawMessage) (string, error)
-}
 
 type Config struct {
 	ServerConfigs map[string]json.RawMessage `json:"serverconfigs"`
@@ -22,8 +19,8 @@ func main() {
 		log.Fatal("could not load config json file")
 	}
 
-	var config = Config{}
-	err = json.Unmarshal([]byte(jsonFile), &config)
+	var configFile = Config{}
+	err = json.Unmarshal([]byte(jsonFile), &configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,12 +40,12 @@ func main() {
 		if err != nil {
 			log.Fatal("not a ConfigPlugin")
 		}
-		var configPlugin ConfigPlugin
-		configPlugin, ok := processor.(ConfigPlugin)
+		var configPlugin config.ConfigPlugin
+		configPlugin, ok := processor.(config.ConfigPlugin)
 		if !ok {
 			log.Fatal("couldn't load plugin")
 		}
-		pluginOut, err := configPlugin.ProcessConfig(config.ServerConfigs)
+		pluginOut, err := configPlugin.ProcessConfig(configFile.ServerConfigs)
 		if err != nil {
 			log.Fatal(err)
 		}
