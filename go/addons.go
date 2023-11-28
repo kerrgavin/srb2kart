@@ -92,6 +92,7 @@ func downloadAddon(filepath string, addon Addon) error {
 	if err != nil {
 		return err
 	}
+	log.Printf("File name: %s", res.Header.Get("Content-Disposition"))
 	defer res.Body.Close()
 	out, err := os.Create(filepath + addon.Name)
 	if err != nil {

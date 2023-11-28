@@ -1,6 +1,39 @@
 {
 	"key": "value",
 	"serverConfigs": {
+		"srb2kart": {
+			"server": {
+				"discordInvites": "Everyone",
+				"pingMeasurement": "Frames",
+				"maxDelayTimeout": 10,
+				"maxDelay": 20,
+				"cpuSleep": 1,
+				"kickTime": 10,
+				"joinTimeOut": 210,
+				"netTimeOut": 210,
+				"blameCFail": false,
+				"showJoinAddress": true,
+				"allowJoin": true,
+				"httpSource": "",
+				"downloadSpeed": 32,
+				"noticeDownload": false,
+				"maxSend": 51200,
+				"resynchAttempts": 2,
+				"maxPlayers": 8,
+				"kartVoices": "Tasteful",
+				"contact": "",
+				"name": "SRB2Kart server",
+				"holePunchServer": "relay.kartkrew.org",
+				"masterServer": {
+					"url": "https://ms.kartkrew.org/ms/api",
+					"updateRate": 15,
+					"timeout": 5,
+					"debug": false,
+					"token": "",
+					"nagAttempts": 5
+				}
+			}
+		},
 		"hostmod":  {
 			"motd" : {
 				"enabled": true,
