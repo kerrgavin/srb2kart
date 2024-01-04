@@ -5,20 +5,18 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"slices"
 )
 
-type Addon struct {
-	Name string `json:"name"`
-	Url string `json:"url"`
-}
+const ADDON_LOG_FILE string = "addon_log.txt"
 
 type Config struct {
-	Misc []Addon `json:"misc"`
-	Characters []Addon `json:"characters"`
-	Maps []Addon `json:"maps"`
+	Misc []string `json:"misc"`
+	Characters []string `json:"characters"`
+	Maps []string `json:"maps"`
 }
 
 func main() {
@@ -28,6 +26,7 @@ func main() {
 	if configFileName == "" || installPath == "" {
 		log.Fatal("Missing arguments")
 	}
+
 	configFile, err := os.ReadFile(configFileName)
 	if err != nil {
 		log.Fatal("Could not open config file")
@@ -53,52 +52,78 @@ func main() {
 	}
 }
 
-func handleAddons(addons []Addon, path string, installPath string) error {
+func handleAddons(addonLinks []string, path string, installPath string) error {
 	fullPath := installPath + path
-	if addons != nil {
+	if addonLinks != nil {
 		os.Mkdir(fullPath, os.ModePerm)
-		for _, addon := range addons {
-			files, err := os.ReadDir(fullPath)
+		for _, link := range addonLinks {
+			addonLog, err := getAddonLog(installPath)
 			if err != nil {
-				log.Println("Could not read directory")
 				return err
 			}
-			fileNames := getFileNames(files)
-			if !slices.Contains[[]string, string](fileNames, addon.Name) {
-				err = downloadAddon(fullPath, addon)
+			_, exists := addonLog[link]
+			if !exists {
+				filename, err := downloadAddon(fullPath, link)
 				if err != nil {
-					log.Println("Could not download file")
+					log.Printf("Could not download file")
 					return err
 				}
+				addonLog[link] = filename
 			}
 		}
 	}
 	return nil
 }
 
-func getFileNames(files []fs.DirEntry) []string {
-	fileNames := []string{}
-	for _, file := range files {
-		if !file.IsDir() {
-			fileNames = append(fileNames, file.Name())
-		}
+func getAddonLog(installPath string) (map[string]string, error) {
+	addonLogFile, err := os.ReadFile(installPath + ADDON_LOG_FILE)
+	if err != nil {
+		return nil, err
 	}
-	return fileNames
+	var addonLog map[string]string
+	err = json.Unmarshal(addonLogFile, &addonLog)
+	if err != nil {
+		return nil, err
+	}
+	return addonLog, nil
 }
 
-func downloadAddon(filepath string, addon Addon) error {
-	log.Printf("Downloading %s from %s", addon.Name, addon.Url)
-	res, err := http.Get(addon.Url)
+func writeAddonLog(installPath string, addonLog map[string]string) error {
+	addonLogFile, err := json.Marshal(addonLog)
+	out, err := os.Create(installPath + ADDON_LOG_FILE)
+	io.Copy(out, addonLogFile)
+	return nil
+}
+
+
+func downloadAddon(filepath string, link string) (string, error) {
+	log.Printf("Downloading: %s", link)
+	res, err := http.Get(link)
 	if err != nil {
-		return err
+		return "", err
 	}
-	log.Printf("File name: %s", res.Header.Get("Content-Disposition"))
+	filename, err := getFileName(res)
+	log.Printf("File name: %s", filename)
 	defer res.Body.Close()
-	out, err := os.Create(filepath + addon.Name)
+	out, err := os.Create(filepath + filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer out.Close()
 	_, err = io.Copy(out, res.Body)
-	return err
+	if err != nil {
+		return "", err
+	}
+	return filename, nil
+}
+
+func getFileName(res *http.Response) (string, error) {
+	contentDisposition := res.Header.Get("Content-Disposition")
+	disposition, params, err := mime.ParseMediaType(contentDisposition)
+	if err != nil {
+		return "", err
+	}
+	log.Printf("Media type: %s", disposition)
+	filename := params["filename"]
+	return filename, nil
 }

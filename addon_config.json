@@ -1,0 +1,45 @@
+{
+	"misc": 
+		[
+			{
+				"name": "hostmod.pk3",
+				"url": "https://mb.srb2.org/addons/hostmod.2421/download"
+			},
+			{
+				"name": "kl_driftgauge_v2.wad",
+				"url": "https://mb.srb2.org/addons/driftboost-gauge.2341/download"
+			},
+			{
+				"name": "kl_emotes-v2.2.pk3",
+				"url": "https://mb.srb2.org/attachments/kl_emotes-v2-2-pk3.15442/"
+			},
+			{
+				"name": "kl_engineswap-v1.6.lua",
+				"url": "https://mb.srb2.org/attachments/kl_engineswap-v1-6-lua.20542/"
+			},
+			{
+				"name": "kl_hitfeed_v2.2.pk3",
+				"url": "https://mb.srb2.org/addons/hitfeed-kl_hitfeed_v2-2-pk3.2399/download"
+			},
+			{
+				"name": "hornmod-championship-edition.pk3",
+				"url": "https://mb.srb2.org/addons/hornmod-championship-edition.2418/download"
+			},
+			{
+				"name": "kl_tricks_v1.2.pk3",
+				"url": "https://mb.srb2.org/attachments/kl_tricks_v1-2-pk3.14814/"
+			}
+		],
+	"characters": [
+		{
+			"name": "kc_kirbychars.pk3",
+			"url": "https://mb.srb2.org/attachments/kc_kirbychars_v2-1-pk3.15839/"
+		}
+	],
+	"maps": [
+		{
+			"name": "KRL_Masters_v3.1.pk3",
+			"url": "https://mb.srb2.org/addons/masters-pack.2281/download"
+		}
+	]
+}
